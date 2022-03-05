@@ -25,7 +25,9 @@ class DataTransferObject implements CastsAttributes
         }
 
         $object = $this->class::fromJson($value, $this->getJsonFlags()->decode);
-        $object->attachParent($model,$key);
+        if (method_exists($object, 'tapCast')) {
+            $object->tapCast($model, $key);
+        }
 
         return $object;
     }

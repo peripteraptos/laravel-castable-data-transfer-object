@@ -14,12 +14,6 @@ use TypeError;
 class CastableDataTransferObjectTest extends TestCase
 {
     /** @test */
-    public function it_has_parent_attached()
-    {
-        $user = User::factory()->create();
-        $this->assertEquals($user->address->getEmail(),$user->email);
-    }
-    /** @test */
     public function it_casts_arrays_to_json()
     {
         User::factory()->create([
@@ -133,6 +127,19 @@ class CastableDataTransferObjectTest extends TestCase
         $this->assertSame('{"floatValue":52.0}', $user->with_flags);
         $this->assertSame('{"floatValue":20}', $user->without_flags);
     }
+
+    /** @test */
+    public function cast_uses_tap_casting()
+    {
+        $user = User::factory()->create([
+            'with_cast_tap' => new DataTransferObjectWithCastTap(),
+        ]);
+
+        $user = User::whereId($user->id)->first();
+
+        $this->assertEquals($user->with_cast_tap->model_id, $user->id);
+        $this->assertEquals($user->with_cast_tap->key, "with_cast_tap");
+    }
 }
 
 class Address extends CastableDataTransferObject
@@ -140,9 +147,17 @@ class Address extends CastableDataTransferObject
     public string $street;
     public string $suburb;
     public string $state;
+}
 
-    public function getEmail(){
-      return $this->parent->email;
+class DataTransferObjectWithCastTap extends CastableDataTransferObject
+{
+    public ?string $model_id;
+    public ?string $key;
+
+    public function tapCast($model, $key)
+    {
+        $this->model_id = $model->id;
+        $this->key = $key;
     }
 }
 
@@ -165,6 +180,7 @@ class User extends Model
         'address' => Address::class,
         'with_flags' => DataTransferObjectWithFlags::class,
         'without_flags' => DataTransferObjectWithoutFlags::class,
+        'with_cast_tap' => DataTransferObjectWithCastTap::class,
     ];
 
     protected static function newFactory()

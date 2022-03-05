@@ -23,6 +23,7 @@ class CreateUsersTable extends Migration
             $table->jsonb('address')->nullable();
             $table->jsonb('with_flags')->nullable();
             $table->jsonb('without_flags')->nullable();
+            $table->jsonb('with_cast_tap')->nullable();
             $table->timestamps();
         });
     }

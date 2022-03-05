@@ -26,12 +26,6 @@ abstract class CastableDataTransferObject extends DataTransferObject implements 
         return new static(json_decode($json, assoc: true, options: $options));
     }
 
-    public function attachParent(Model $model, string $key)
-    {
-        $this->parent = $model;
-        $this->parent_key = $key;
-    }
-
     public function toJson($options = 0)
     {
         return json_encode($this->toArray(), $options);
