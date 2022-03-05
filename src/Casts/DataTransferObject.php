@@ -24,7 +24,19 @@ class DataTransferObject implements CastsAttributes
             return;
         }
 
-        return $this->class::fromJson($value, $this->getJsonFlags()->decode);
+        $object = $this->class::fromJson($value, $this->getJsonFlags()->decode);
+        $object->attachParent($model,$key);
+
+        return $object;
+    }
+
+    protected function getJsonFlags(): CastUsingJsonFlags
+    {
+        $attributes = (new ReflectionClass($this->class))
+            ->getAttributes(CastUsingJsonFlags::class);
+
+        return ($attributes[0] ?? null)?->newInstance()
+            ?? new CastUsingJsonFlags();
     }
 
     /**
@@ -40,19 +52,10 @@ class DataTransferObject implements CastsAttributes
             $value = new $this->class($value);
         }
 
-        if (! $value instanceof $this->class) {
+        if (!$value instanceof $this->class) {
             throw new InvalidArgumentException("Value must be of type [$this->class], array, or null");
         }
 
         return $value->toJson($this->getJsonFlags()->encode);
-    }
-
-    protected function getJsonFlags(): CastUsingJsonFlags
-    {
-        $attributes = (new ReflectionClass($this->class))
-            ->getAttributes(CastUsingJsonFlags::class);
-
-        return ($attributes[0] ?? null)?->newInstance()
-             ?? new CastUsingJsonFlags();
     }
 }

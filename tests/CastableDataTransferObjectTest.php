@@ -14,6 +14,12 @@ use TypeError;
 class CastableDataTransferObjectTest extends TestCase
 {
     /** @test */
+    public function it_has_parent_attached()
+    {
+        $user = User::factory()->create();
+        $this->assertEquals($user->address->getEmail(),$user->email);
+    }
+    /** @test */
     public function it_casts_arrays_to_json()
     {
         User::factory()->create([
@@ -134,6 +140,10 @@ class Address extends CastableDataTransferObject
     public string $street;
     public string $suburb;
     public string $state;
+
+    public function getEmail(){
+      return $this->parent->email;
+    }
 }
 
 #[CastUsingJsonFlags(encode: JSON_PRESERVE_ZERO_FRACTION)]
