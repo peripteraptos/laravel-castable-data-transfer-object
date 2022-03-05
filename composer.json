@@ -1,5 +1,5 @@
 {
-    "name": "jessarcher/laravel-castable-data-transfer-object",
+    "name": "peripteraptos/laravel-castable-data-transfer-object",
     "description": "Automatically cast JSON columns to rich PHP objects in Laravel using Spatie's data-transfer-object class",
     "keywords": [
         "jessarcher",
